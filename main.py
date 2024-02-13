@@ -4,7 +4,7 @@ import nltk
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
 from collections import Counter
-import io
+import os
 import PyPDF2
 import pandas as pd
 import re  # Added import for regular expressions
@@ -143,11 +143,54 @@ if resumes_files:
         st.subheader(f"Results Table (Sorted by {selected_sort_option}):")
         st.write(results_df)
 
+        # Find the index of the highest similarity score
+        highest_score_index = results_df['Similarity Score'].idxmax()
+        highest_score_resume_name = resumes_files[highest_score_index].name
+        # Details of Highest Similarity Score
+        st.subheader("\nDetails of Highest Similarity Score Resume:")
+        st.write(f"Resume Name: {highest_score_resume_name}")
+        st.write(
+            f"Similarity Score: {results_df.loc[highest_score_index, 'Similarity Score']:.2f}")
+
+        # Check if 'CGPA' column exists in the DataFrame
+        if 'CGPA' in results_df.columns:
+            cgpa_value = results_df.loc[highest_score_index, 'CGPA']
+            st.write(f"CGPA: {cgpa_value}" if pd.notnull(
+                cgpa_value) else "CGPA: Not Mentioned")
+        else:
+            st.write("CGPA: Not Mentioned")
+
+        # Check if 'Total Score' column exists in the DataFrame
+        if 'Total Score' in results_df.columns:
+            total_score_value = results_df.loc[highest_score_index,
+                                               'Total Score']
+            st.write(f"Total Score: {total_score_value:.2f}" if pd.notnull(
+                total_score_value) else "Total Score: Not Mentioned")
+        else:
+            st.write("Total Score: Not Mentioned")
+
+        # Check if 'Email' column exists in the DataFrame
+        if 'Email' in results_df.columns:
+            email_value = results_df.loc[highest_score_index, 'Email']
+            st.write(f"Email: {email_value}" if pd.notnull(
+                email_value) else "Email: Not Mentioned")
+        else:
+            st.write("Email: Not Mentioned")
+
+        # Check if 'Contact' column exists in the DataFrame
+        if 'Contact' in results_df.columns:
+            contact_value = results_df.loc[highest_score_index, 'Contact']
+            st.write(f"Contact: {contact_value}" if pd.notnull(
+                contact_value) else "Contact: Not Mentioned")
+        else:
+            st.write("Contact: Not Mentioned")
+
         # Create a DataFrame for skills distribution
         skills_distribution_data = {'Resume': [], 'Skill': [], 'Frequency': []}
         for i, resume_skills in enumerate(all_resumes_skills):
             for skill in set(resume_skills):
-                skills_distribution_data['Resume'].append(f"Resume {i+1}")
+                skills_distribution_data['Resume'].append(
+                    resumes_files[i].name)
                 skills_distribution_data['Skill'].append(skill)
                 skills_distribution_data['Frequency'].append(
                     resume_skills.count(skill))
